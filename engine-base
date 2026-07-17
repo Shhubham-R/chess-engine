@@ -1,5 +1,27 @@
 class Board:
 
     def __init__(self):
-        self.square = _empty_board
-        
+        self.square = _empty_board()
+        self.turn = "w"
+        self.casting_rights = {'K': True, 'Q': True, 'k': True, 'q': True }
+        self.en_passent_target = None
+        self.halfmove_clock = 0
+        self.fullmove_number = 1
+        self.start_setup_position()
+
+def _empty_board(self):
+    return [[None for _ in range(8)] for _ in range(8)]
+
+def start_setup_position(self):
+    back_rank = ['R', 'N', 'B', 'Q','K','B','N','R']
+    for file in range:
+        self.squares[0][file] = 'w' + back_rank[file]
+        self.squares[1][file] = 'wp'
+        self.squares[6][file] = 'bP'
+        self.squares[7][file] = 'b' + back_rank[file]
+
+def get_piece(rank, file, piece):
+    return self.squares[rank][file]
+
+def set_piece(self, rank, file, picec):
+    self.squares[rank]
