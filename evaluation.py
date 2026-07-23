@@ -1,5 +1,7 @@
 # evaluation.py
 
+from piece import Piece
+
 class Evaluation:
     """
     Evaluates a chess position.
@@ -15,7 +17,7 @@ class Evaluation:
         'B': 330,
         'R': 500,
         'Q': 900,
-        'K': 0
+        'K': 20000 # Give King a high value
     }
 
     @staticmethod
@@ -29,12 +31,18 @@ class Evaluation:
         for row in board.squares:
             for piece in row:
 
-                if piece is None:
+                if piece is None or piece == ".":
                     continue
 
-                value = Evaluation.PIECE_VALUES[piece.kind.upper()]
+                kind = Piece.type(piece)
+                color = Piece.color(piece)
 
-                if piece.color == 'w':
+                if kind not in Evaluation.PIECE_VALUES:
+                    continue
+
+                value = Evaluation.PIECE_VALUES[kind]
+
+                if color == 'w':
                     score += value
                 else:
                     score -= value

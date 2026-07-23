@@ -7,7 +7,52 @@ class Board:
         self.en_passant_target = None
         self.halfmove_clock = 0
         self.fullmove_number = 1
+        self.move_history = []
         self.setup_start_position()
+
+    def make_move(self, move):
+        """
+        Applies a move to the board and records the state for undoing.
+        """
+        # Save state to history stack
+        squares_copy = [row[:] for row in self.squares]
+        state = {
+            'squares': squares_copy,
+            'turn': self.turn,
+            'castling_rights': self.castling_rights.copy(),
+            'en_passant_target': self.en_passant_target,
+            'halfmove_clock': self.halfmove_clock,
+            'fullmove_number': self.fullmove_number
+        }
+        self.move_history.append(state)
+
+        # Move the piece
+        piece = self.squares[move.start_row][move.start_col]
+        self.squares[move.end_row][move.end_col] = piece
+        self.squares[move.start_row][move.start_col] = None
+
+        # Handle promotion
+        if move.promotion:
+            self.squares[move.end_row][move.end_col] = self.turn + move.promotion.upper()
+
+        # Update fullmove number and turn
+        if self.turn == 'b':
+            self.fullmove_number += 1
+        self.turn = 'b' if self.turn == 'w' else 'w'
+
+    def undo_move(self):
+        """
+        Undoes the last move, restoring the board state.
+        """
+        if not self.move_history:
+            return
+        state = self.move_history.pop()
+        self.squares = state['squares']
+        self.turn = state['turn']
+        self.castling_rights = state['castling_rights']
+        self.en_passant_target = state['en_passant_target']
+        self.halfmove_clock = state['halfmove_clock']
+        self.fullmove_number = state['fullmove_number']
 
     def _empty_board(self):
         return [[None for _ in range(8)] for _ in range(8)]

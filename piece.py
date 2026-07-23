@@ -48,3 +48,19 @@ class Piece:
     @property
     def is_black(self):
         return self.color == "b"
+
+    @staticmethod
+    def color(piece):
+        if isinstance(piece, Piece):
+            return piece.color
+        if isinstance(piece, str) and len(piece) >= 2:
+            return piece[0]
+        return None
+
+    @staticmethod
+    def type(piece):
+        if isinstance(piece, Piece):
+            return piece.type
+        if isinstance(piece, str) and len(piece) >= 2:
+            return piece[1].upper()
+        return None

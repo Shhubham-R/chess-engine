@@ -5,17 +5,25 @@ class MoveGenerator:
     def __init__(self, board):
         self.board = board
 
-    def generate_moves(self, color):
+    def generate_moves(self, color=None):
         """
-        Returns a list of all legal moves for the given color.
+        Returns a list of all legal moves. Can be called as:
+          - MoveGenerator.generate_moves(board)
+          - generator.generate_moves(color)
         """
+        if color is None:
+            # Called as MoveGenerator.generate_moves(board) where 'self' is the board
+            board = self
+            generator = MoveGenerator(board)
+            return generator.generate_moves(board.turn)
+
         moves = []
 
         for row in range(8):
             for col in range(8):
                 piece = self.board.squares[row][col]
 
-                if piece == ".":
+                if piece is None or piece == ".":
                     continue
 
                 if Piece.color(piece) != color:
