@@ -1,4 +1,5 @@
 from piece import Piece
+from move import Move
 
 
 class MoveGenerator:
@@ -56,28 +57,103 @@ class MoveGenerator:
     # ----------------------------------------------------
 
     def pawn_moves(self, row, col, piece):
-        return []
+        moves = []
+        color = Piece.color(piece)
+        direction = 1 if color == 'w' else -1
+        start_row = 1 if color == 'w' else 6
+        promo_row = 7 if color == 'w' else 0
+
+        # 1 step forward
+        next_row = row + direction
+        if self.board.on_board(next_row, col) and self.board.is_empty(next_row, col):
+            if next_row == promo_row:
+                for promo in ['Q', 'R', 'B', 'N']:
+                    moves.append(Move(row, col, next_row, col, promotion=promo))
+            else:
+                moves.append(Move(row, col, next_row, col))
+            
+            # 2 steps forward from starting rank
+            two_next_row = row + 2 * direction
+            if row == start_row and self.board.on_board(two_next_row, col) and self.board.is_empty(two_next_row, col):
+                moves.append(Move(row, col, two_next_row, col))
+
+        # Captures
+        for col_offset in [-1, 1]:
+            target_col = col + col_offset
+            if self.board.on_board(next_row, target_col):
+                target_piece = self.board.squares[next_row][target_col]
+                if target_piece and Piece.color(target_piece) != color:
+                    if next_row == promo_row:
+                        for promo in ['Q', 'R', 'B', 'N']:
+                            moves.append(Move(row, col, next_row, target_col, promotion=promo))
+                    else:
+                        moves.append(Move(row, col, next_row, target_col))
+        return moves
 
     # ----------------------------------------------------
     # Knight
     # ----------------------------------------------------
 
     def knight_moves(self, row, col, piece):
-        return []
+        moves = []
+        color = Piece.color(piece)
+        offsets = [
+            (-2, -1), (-2, 1), (-1, -2), (-1, 2),
+            (1, -2), (1, 2), (2, -1), (2, 1)
+        ]
+        for r_off, c_off in offsets:
+            r, c = row + r_off, col + c_off
+            if self.board.on_board(r, c):
+                target_piece = self.board.squares[r][c]
+                if target_piece is None or Piece.color(target_piece) != color:
+                    moves.append(Move(row, col, r, c))
+        return moves
 
     # ----------------------------------------------------
     # Bishop
     # ----------------------------------------------------
 
     def bishop_moves(self, row, col, piece):
-        return []
+        moves = []
+        color = Piece.color(piece)
+        directions = [(1, 1), (1, -1), (-1, 1), (-1, -1)]
+        for dr, dc in directions:
+            r, c = row + dr, col + dc
+            while self.board.on_board(r, c):
+                target_piece = self.board.squares[r][c]
+                if target_piece is None:
+                    moves.append(Move(row, col, r, c))
+                elif Piece.color(target_piece) != color:
+                    moves.append(Move(row, col, r, c))
+                    break
+                else:
+                    break
+                r += dr
+                c += dc
+        return moves
 
     # ----------------------------------------------------
     # Rook
     # ----------------------------------------------------
 
     def rook_moves(self, row, col, piece):
-        return []
+        moves = []
+        color = Piece.color(piece)
+        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+        for dr, dc in directions:
+            r, c = row + dr, col + dc
+            while self.board.on_board(r, c):
+                target_piece = self.board.squares[r][c]
+                if target_piece is None:
+                    moves.append(Move(row, col, r, c))
+                elif Piece.color(target_piece) != color:
+                    moves.append(Move(row, col, r, c))
+                    break
+                else:
+                    break
+                r += dr
+                c += dc
+        return moves
 
     # ----------------------------------------------------
     # Queen
@@ -94,4 +170,16 @@ class MoveGenerator:
     # ----------------------------------------------------
 
     def king_moves(self, row, col, piece):
-        return []
+        moves = []
+        color = Piece.color(piece)
+        directions = [
+            (1, 0), (-1, 0), (0, 1), (0, -1),
+            (1, 1), (1, -1), (-1, 1), (-1, -1)
+        ]
+        for dr, dc in directions:
+            r, c = row + dr, col + dc
+            if self.board.on_board(r, c):
+                target_piece = self.board.squares[r][c]
+                if target_piece is None or Piece.color(target_piece) != color:
+                    moves.append(Move(row, col, r, c))
+        return moves
