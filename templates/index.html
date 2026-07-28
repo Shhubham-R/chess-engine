@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antigravity Chess Engine</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <h1>Antigravity Chess</h1>
+                <p>Powered by Minimax Search & Evaluation Engine</p>
+            </div>
+            <div class="turn-indicator">
+                <div id="turn-light" class="turn-light your-turn"></div>
+                <span id="turn-text" class="turn-text">YOUR TURN</span>
+            </div>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="game-layout">
+            <!-- Left: Board and Evaluation Bar -->
+            <div class="board-wrapper">
+                <!-- Evaluation Bar -->
+                <div class="eval-bar-container">
+                    <div class="eval-bar-black" id="eval-bar-black"></div>
+                    <div class="eval-bar-white" id="eval-bar-white"></div>
+                </div>
+
+                <!-- Chess Board -->
+                <div class="chess-board" id="board">
+                    <!-- Dynamic rendering via JS -->
+                </div>
+
+                <!-- Game Over Overlay -->
+                <div class="game-over-overlay" id="game-over">
+                    <div class="game-over-title">GAME OVER</div>
+                    <div class="game-over-subtitle" id="game-over-subtitle">Checkmate or Stalemate.</div>
+                    <button class="btn btn-primary" id="btn-restart">Play Again</button>
+                </div>
+            </div>
+
+            <!-- Right: Controls & History -->
+            <div class="sidebar">
+                <!-- Status Panel -->
+                <div class="status-panel">
+                    <div class="metrics">
+                        <div class="metric-card">
+                            <div class="metric-label">Evaluation</div>
+                            <div class="metric-value" id="eval-value">0.00</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Depth</div>
+                            <div class="metric-value">3 plys</div>
+                        </div>
+                    </div>
+
+                    <!-- Action Controls -->
+                    <div class="controls">
+                        <button class="btn btn-secondary" id="btn-undo" disabled>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 7v6h6M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"/>
+                            </svg>
+                            Undo
+                        </button>
+                        <button class="btn btn-secondary" id="btn-reset">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 11-.57-8.38l5.67-5.67"/>
+                            </svg>
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Move Log -->
+                <div class="move-log-panel">
+                    <div class="move-log-header">Move History</div>
+                    <div class="move-list" id="move-list">
+                        <!-- Dynamic rendering via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

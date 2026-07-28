@@ -8,6 +8,7 @@ class Board:
         self.halfmove_clock = 0
         self.fullmove_number = 1
         self.move_history = []
+        self.played_moves = []
         self.setup_start_position()
 
     def make_move(self, move):
@@ -25,6 +26,7 @@ class Board:
             'fullmove_number': self.fullmove_number
         }
         self.move_history.append(state)
+        self.played_moves.append(move)
 
         # Move the piece
         piece = self.squares[move.start_row][move.start_col]
@@ -46,6 +48,7 @@ class Board:
         """
         if not self.move_history:
             return
+        self.played_moves.pop()
         state = self.move_history.pop()
         self.squares = state['squares']
         self.turn = state['turn']
