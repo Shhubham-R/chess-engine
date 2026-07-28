@@ -314,9 +314,39 @@ async function executeMove(move) {
         }
     }
 
+    // --- OPTIMISTIC UI UPDATE ---
+    // 1. Move the piece locally
+    const movingPiece = gameState.squares[move.start_row][move.start_col];
+    gameState.squares[move.start_row][move.start_col] = null;
+    
+    if (promotion) {
+        gameState.squares[move.end_row][move.end_col] = {
+            type: promotion.toUpperCase(),
+            color: movingPiece.color
+        };
+    } else {
+        gameState.squares[move.end_row][move.end_col] = movingPiece;
+    }
+
+    // 2. Clear visual selections
+    selectedSquare = null;
+    activeDestinations = [];
+
+    // 3. Highlight this move
+    lastHumanMove = move;
+    lastAiMove = null;
+
+    // 4. Update the move log history instantly
+    const startCoord = formatCoordinate(move.start_row, move.start_col);
+    const endCoord = formatCoordinate(move.end_row, move.end_col);
+    const promoStr = promotion ? `=${promotion.toUpperCase()}` : "";
+    gameState.history.push(`${startCoord}${endCoord}${promoStr}`);
+
+    // 5. Lock board and render immediately
     aiThinking = true;
-    updatePanel();
     renderBoard();
+    updatePanel();
+    // ----------------------------
 
     try {
         const response = await fetch('/api/move', {
