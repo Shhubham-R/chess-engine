@@ -6,7 +6,7 @@ class MoveGenerator:
     def __init__(self, board):
         self.board = board
 
-    def generate_moves(self, color=None):
+    def generate_moves(self, color=None, check_legality=True):
         """
         Returns a list of all legal moves. Can be called as:
           - MoveGenerator.generate_moves(board)
@@ -18,7 +18,7 @@ class MoveGenerator:
             generator = MoveGenerator(board)
             return generator.generate_moves(board.turn)
 
-        moves = []
+        pseudolegal_moves = []
 
         for row in range(8):
             for col in range(8):
@@ -33,24 +33,80 @@ class MoveGenerator:
                 piece_type = Piece.type(piece)
 
                 if piece_type == "P":
-                    moves.extend(self.pawn_moves(row, col, piece))
+                    pseudolegal_moves.extend(self.pawn_moves(row, col, piece))
 
                 elif piece_type == "N":
-                    moves.extend(self.knight_moves(row, col, piece))
+                    pseudolegal_moves.extend(self.knight_moves(row, col, piece))
 
                 elif piece_type == "B":
-                    moves.extend(self.bishop_moves(row, col, piece))
+                    pseudolegal_moves.extend(self.bishop_moves(row, col, piece))
 
                 elif piece_type == "R":
-                    moves.extend(self.rook_moves(row, col, piece))
+                    pseudolegal_moves.extend(self.rook_moves(row, col, piece))
 
                 elif piece_type == "Q":
-                    moves.extend(self.queen_moves(row, col, piece))
+                    pseudolegal_moves.extend(self.queen_moves(row, col, piece))
 
                 elif piece_type == "K":
-                    moves.extend(self.king_moves(row, col, piece))
+                    pseudolegal_moves.extend(self.king_moves(row, col, piece))
 
-        return moves
+        if not check_legality:
+            return pseudolegal_moves
+
+        # Filter out moves that leave own king in check
+        legal_moves = []
+        for m in pseudolegal_moves:
+            self.board.make_move(m)
+            if not self.is_in_check(color):
+                legal_moves.append(m)
+            self.board.undo_move()
+
+        return legal_moves
+
+    def is_in_check(self, color):
+        """
+        Returns True if the king of the given color is currently in check.
+        """
+        king_pos = None
+        for r in range(8):
+            for c in range(8):
+                piece = self.board.squares[r][c]
+                if piece and Piece.type(piece) == 'K' and Piece.color(piece) == color:
+                    king_pos = (r, c)
+                    break
+            if king_pos:
+                break
+
+        if not king_pos:
+            return False
+
+        king_row, king_col = king_pos
+        opponent_color = 'b' if color == 'w' else 'w'
+
+        for r in range(8):
+            for c in range(8):
+                piece = self.board.squares[r][c]
+                if piece and Piece.color(piece) == opponent_color:
+                    piece_type = Piece.type(piece)
+                    opp_moves = []
+                    
+                    if piece_type == "P":
+                        opp_moves = self.pawn_moves(r, c, piece)
+                    elif piece_type == "N":
+                        opp_moves = self.knight_moves(r, c, piece)
+                    elif piece_type == "B":
+                        opp_moves = self.bishop_moves(r, c, piece)
+                    elif piece_type == "R":
+                        opp_moves = self.rook_moves(r, c, piece)
+                    elif piece_type == "Q":
+                        opp_moves = self.queen_moves(r, c, piece)
+                    elif piece_type == "K":
+                        opp_moves = self.king_moves(r, c, piece)
+
+                    for m in opp_moves:
+                        if m.end_row == king_row and m.end_col == king_col:
+                            return True
+        return False
 
     # ----------------------------------------------------
     # Pawn
