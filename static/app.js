@@ -299,6 +299,7 @@ function handleSquareClick(r, c) {
 
 // Handle pawn promotion logic
 async function executeMove(move) {
+    if (aiThinking) return;
     let promotion = null;
     
     // Detect pawn promotion: White pawn moving to row 7
