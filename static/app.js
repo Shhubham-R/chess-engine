@@ -77,6 +77,12 @@ const gameOverOverlay = document.getElementById('game-over');
 const gameOverSubtitle = document.getElementById('game-over-subtitle');
 const btnRestart = document.getElementById('btn-restart');
 
+function formatCoordinate(row, col) {
+    const file = String.fromCharCode(97 + col); // 97 is ASCII 'a'
+    const rank = row + 1;
+    return `${file}${rank}`;
+}
+
 // Fetch Board State
 async function fetchState() {
     try {
